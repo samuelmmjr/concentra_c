@@ -1,0 +1,68 @@
+---
+const meta = import.meta.env.PUBLIC_META_PIXEL_ID || '';
+const ga = import.meta.env.PUBLIC_GA4_ID || '';
+---
+<div class="cookie-banner" id="cookie-banner" role="region" aria-label="Preferências de privacidade" hidden>
+  <p>Podemos usar cookies opcionais para medir visitas e campanhas. <a href="/privacidade">Saiba mais</a>.</p>
+  <div><button type="button" data-consent="denied">Recusar opcionais</button><button type="button" data-consent="granted">Aceitar opcionais</button></div>
+</div>
+<script is:inline define:vars={{ meta, ga }}>
+(() => {
+  const key = 'casco-consent-v1';
+  const banner = document.getElementById('cookie-banner');
+  const get = (k, session = false) => { try { return (session ? sessionStorage : localStorage).getItem(k); } catch { return null; } };
+  const set = (k, v, session = false) => { try { (session ? sessionStorage : localStorage).setItem(k, v); } catch {} };
+  let consent = get(key);
+  const utmKeys = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'];
+  let saved = {}; try { saved = JSON.parse(get('casco-utms', true) || '{}'); } catch {}
+  const incoming = new URLSearchParams(location.search);
+  if (utmKeys.some(k => incoming.has(k))) {
+    saved = {};
+    for (const k of utmKeys) if (incoming.has(k)) saved[k] = incoming.get(k).slice(0, 200);
+    set('casco-utms', JSON.stringify(saved), true);
+  }
+  document.querySelectorAll('a[href^="https://buy.braip.com/checkout/"]').forEach(a => {
+    const u = new URL(a.href);
+    for (const k of utmKeys) if (saved[k]) u.searchParams.set(k, saved[k]);
+    a.href = u.toString();
+  });
+  let metaLoaded = false, gaLoaded = false;
+  function enable() {
+    if (consent !== 'granted') return;
+    if (/^\d+$/.test(meta)) {
+      if (!metaLoaded) {
+        const fb = window.fbq = window.fbq || function(){(fb.callMethod ? fb.callMethod.apply(fb, arguments) : fb.queue.push(arguments));};
+        fb.queue = fb.queue || []; fb.loaded = true; fb.version = '2.0'; window._fbq = fb;
+        const script = document.createElement('script'); script.async = true; script.src = 'https://connect.facebook.net/en_US/fbevents.js'; document.head.appendChild(script);
+        fb('init', meta); metaLoaded = true;
+      }
+      window.fbq('consent', 'grant'); window.fbq('track', 'PageView');
+    }
+    if (/^G-[A-Z0-9]+$/.test(ga)) {
+      window.dataLayer = window.dataLayer || []; window.gtag = window.gtag || function(){window.dataLayer.push(arguments);};
+      window.gtag('consent', 'update', {analytics_storage:'granted',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
+      if (!gaLoaded) {
+        const script = document.createElement('script'); script.async = true; script.src = 'https://www.googletagmanager.com/gtag/js?id=' + ga; document.head.appendChild(script);
+        window.gtag('js', new Date()); window.gtag('config', ga); gaLoaded = true;
+      }
+    }
+  }
+  banner.hidden = !!consent;
+  if (consent === 'granted') enable();
+  document.querySelectorAll('[data-consent]').forEach(b => b.addEventListener('click', () => {
+    consent = b.dataset.consent; set(key, consent); banner.hidden = true;
+    if (consent === 'granted') enable();
+    else {
+      if (window.fbq) window.fbq('consent', 'revoke');
+      if (window.gtag) window.gtag('consent', 'update', {analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
+    }
+  }));
+  document.querySelectorAll('[data-cookie-settings]').forEach(b => b.addEventListener('click', () => { banner.hidden = false; banner.querySelector('button').focus(); }));
+  window.addEventListener('casco:analytics', e => {
+    if (consent !== 'granted') return;
+    const {event, kit, placement} = e.detail;
+    if (window.gtag) window.gtag('event', event, {kit,placement,transport_type:'beacon'});
+    if (window.fbq) window.fbq('trackCustom', event, {kit,placement});
+  });
+})();
+</script>

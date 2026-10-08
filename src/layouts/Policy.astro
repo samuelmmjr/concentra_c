@@ -1,0 +1,7 @@
+---
+import '../styles/global.css';
+import { company, siteUrl } from '../config/site';
+import Tracking from '../components/Tracking.astro';
+const { title } = Astro.props;
+---
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>{title} | {company.brand}</title><meta name="description" content={`${title} da Casco Performance: condições e canais de atendimento.`}/><link rel="icon" href="/favicon.svg"/>{siteUrl && <link rel="canonical" href={`${siteUrl}${Astro.url.pathname}`} />}</head><body><main class="policy-page"><a class="policy-back" href="/">← Voltar para o Concentra C</a><h1>{title}</h1><p class="policy-date">Atualização: 8 de outubro de 2026</p><section class="policy-company"><strong>{company.legalName || '[Preencher razão social]'}</strong><p>CNPJ: {company.cnpj || '[Preencher CNPJ]'}</p><p>Endereço: {company.address || '[Preencher endereço completo]'}</p><a href={`mailto:${company.email}`}>{company.email}</a></section><slot/><nav class="policy-links"><a href="/privacidade">Privacidade</a><a href="/termos">Termos</a><a href="/trocas">Trocas e devoluções</a><button type="button" data-cookie-settings>Preferências de cookies</button></nav></main><Tracking/></body></html>

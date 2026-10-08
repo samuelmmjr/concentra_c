@@ -1,5 +1,23 @@
 ---
 import '../styles/global.css';
+import { company, siteUrl, reviews } from '../config/site';
+import Tracking from '../components/Tracking.astro';
+const canonical = siteUrl ? `${siteUrl}/` : null;
+const reviewTotal = Object.values(reviews).reduce((a, b) => a + b, 0);
+const reviewAverage = (reviews.five * 5 + reviews.four * 4 + reviews.three * 3 + reviews.two * 2 + reviews.one) / reviewTotal;
+const ratingRows = [5,4,3,2,1].map((stars, i) => ({ stars, count: [reviews.five,reviews.four,reviews.three,reviews.two,reviews.one][i] }));
+const productSchema = {
+  '@context': 'https://schema.org', '@type': 'Product',
+  aggregateRating: { '@type': 'AggregateRating', ratingValue: reviewAverage.toFixed(2), reviewCount: reviewTotal, bestRating: 5, worstRating: 1 },
+  name: 'Concentra C', description: 'Suplemento alimentar em cápsulas. Kits de 1, 3 e 6 potes, com 60 cápsulas por pote.',
+  brand: { '@type': 'Brand', name: company.brand },
+  ...(siteUrl ? { image: [`${siteUrl}/images/produto.png`], url: canonical } : {}),
+  offers: [
+    {n:1, price:'147.00', slug:'plajekdg'},
+    {n:3, price:'357.00', slug:'pla0xor8'},
+    {n:6, price:'617.00', slug:'play4k6o'}
+  ].map(k => ({'@type':'Offer', name:`Kit de ${k.n} potes`, price:k.price, priceCurrency:'BRL', url:`https://buy.braip.com/checkout/${k.slug}/che6vvg1`}))
+};
 ---
 
 <!doctype html>
@@ -11,6 +29,17 @@ import '../styles/global.css';
   <meta name="description" content="Conheça a composição do Concentra C, as quantidades por porção e as opções de compra da Casco Performance.">
   <meta name="theme-color" content="#061a10">
   <link rel="preload" as="image" href="/images/hero-floresta.png">
+  {canonical && <link rel="canonical" href={canonical} />}
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:title" content="Concentra C | Conheça a fórmula e escolha seu kit" />
+  <meta property="og:description" content="10 ingredientes em cápsulas. Compare kits de 1, 3 e 6 potes. PIX ou cartão e até 12x conforme condições do checkout." />
+  {canonical && <meta property="og:url" content={canonical} />}
+  {siteUrl && <meta property="og:image" content={`${siteUrl}/images/produto.png`} />}
+  <meta property="og:image:alt" content="Pote de Concentra C com 60 cápsulas" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <script type="application/ld+json" set:html={JSON.stringify(productSchema).replace(/</g, '\u003c')} />
 </head>
 <body>
 <svg class="sr-only" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
@@ -37,19 +66,22 @@ import '../styles/global.css';
         <h1 id="hero-title">Sua rotina exige foco.<br><span>Conheça o Concentra C.</span></h1>
         <p>10 ingredientes em cápsulas, com cafeína, vitaminas e outros nutrientes. Conheça a composição e compre diretamente pelo checkout.</p>
       </div>
+      <div class="hero-visual">
       <div class="hero-product"><img src="/images/produto.png" alt="Concentra C, frasco com 60 cápsulas" width="2800" height="2800" fetchpriority="high"></div>
       <div class="hero-attributes">
         <div><span class="icon-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#leaf"></use></svg></span><p><strong>10</strong> ingredientes</p></div>
         <div><span class="icon-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#capsule"></use></svg></span><p><strong>60</strong> cápsulas</p></div>
         <div><span class="icon-ring"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#bolt"></use></svg></span><p>Contém<br> cafeína</p></div>
       </div>
-      <div class="hero-actions"><div class="hero-offer"><strong>Escolha entre 1, 3 ou 6 potes</strong><span>A partir de R$ 102,83 por pote no kit de 6</span></div><div class="hero-action-links"><a class="button" href="#ofertas" data-event="offer_view_click" data-placement="hero">QUERO ESCOLHER MEU KIT</a><a class="button outline" href="#formula">CONHECER A FÓRMULA</a></div><p class="checkout-note">7 dias de garantia de devolução do dinheiro. Veja as condições abaixo.</p></div>
+      </div>
+      <div class="hero-actions"><div class="hero-offer"><strong>Escolha entre 1, 3 ou 6 potes</strong><span>A partir de R$ 102,83 por pote no kit de 6 · antes do frete</span></div><div class="hero-action-links"><a class="button" href="#ofertas" data-event="offer_view_click" data-placement="hero">QUERO ESCOLHER MEU KIT</a><a class="button outline" href="#formula">CONHECER A FÓRMULA</a></div><p class="checkout-note">7 dias de garantia de devolução do dinheiro. Veja as condições abaixo.</p></div>
     </section>
     <section class="trust-bar" aria-label="Informações para compra">
       <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#document"></use></svg><p><strong>30 porções por frasco</strong><span>60 cápsulas · porção de 2 cápsulas.</span></p></div>
-      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#cart"></use></svg><p><strong>Compra direta na Braip</strong><span>Escolha 1, 3 ou 6 potes.</span></p></div>
+      <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#cart"></use></svg><p><strong>Pagamento seguro: PIX, cartão</strong><span>Até 12x no cartão; confira juros e total.</span></p></div>
       <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#chat"></use></svg><p><strong>Atendimento via WhatsApp</strong><span>Tire suas dúvidas conosco.</span></p></div>
     </section>
+<section class="routine-benefits section-light" aria-labelledby="routine-title"><div class="section-title"><h2 id="routine-title">SUA ROTINA, COM MAIS PRATICIDADE</h2><p>Uma escolha simples para quem valoriza conveniência e informação antes de comprar.</p></div><div class="routine-grid"><article><h3>Sem preparo</h3><p>Cápsulas para incluir na rotina, seguindo a recomendação da embalagem.</p></article><article><h3>Composição à vista</h3><p>10 ingredientes e suas quantidades por porção, para você comparar com clareza.</p></article><article><h3>Quantidade sob medida</h3><p>Escolha 1, 3 ou 6 potes. Cada pote contém 60 cápsulas e 30 porções.</p></article></div></section>
     <section id="formula" class="ingredients section-light">
       <div class="section-title"><h2>CONHEÇA OS INGREDIENTES</h2><p>Quantidades por porção de 2 cápsulas.</p></div>
       <div class="ingredient-grid">
@@ -65,6 +97,8 @@ import '../styles/global.css';
 <article class="ingredient"><div class="ingredient-photo" style="--x:100%;--y:50%" aria-hidden="true"></div><div><h3>Fosfatidilserina</h3><p>30 mg</p></div></article>
       </div>
       <p class="label-note">Composição informada pela marca. Imagens ilustrativas dos ingredientes. Confira o rótulo atualizado.</p>
+<div class="composition-panel"><table class="composition-table"><caption>COMPOSIÇÃO POR PORÇÃO</caption><thead><tr><th scope="col">Ingrediente</th><th scope="col">Quantidade em 2 cápsulas</th></tr></thead><tbody><tr><th scope="row">Coenzima Q10</th><td>30 mg</td></tr><tr><th scope="row">L-tirosina</th><td>200 mg</td></tr><tr><th scope="row">L-triptofano</th><td>100 mg</td></tr><tr><th scope="row">Fosfatidilserina</th><td>30 mg</td></tr><tr><th scope="row">Colina</th><td>100 mg</td></tr><tr><th scope="row">Magnésio</th><td>150 mg</td></tr><tr><th scope="row">Vitamina B3</th><td>30 mg</td></tr><tr><th scope="row">Cafeína</th><td>75 mg</td></tr><tr><th scope="row">Vitamina D3</th><td>50 µg</td></tr><tr><th scope="row">Vitamina B12</th><td>4,8 µg</td></tr></tbody></table><p class="composition-footnote">60 cápsulas por pote · 30 porções de 2 cápsulas.</p></div><p class="label-note">Composição informada pela marca. Confira a tabela nutricional completa, alergênicos e advertências no rótulo atualizado.</p>
+<section class="formula-reasons" aria-labelledby="why-title"><div class="section-title"><h2 id="why-title">POR QUE ESTA FÓRMULA?</h2><p>O valor está também na combinação e na conveniência. Conheça três componentes da porção de 2 cápsulas.</p></div><div class="routine-grid"><article><span>30 mg por porção</span><h3>Coenzima Q10</h3><p>Um dos componentes da fórmula, junto de vitaminas, minerais e aminoácidos.</p></article><article><span>50 µg por porção</span><h3>Vitamina D3</h3><p>A composição informa a quantidade por porção para ajudar na avaliação da sua suplementação.</p></article><article><span>100 mg por porção</span><h3>L-triptofano</h3><p>Aminoácido presente na combinação. Sua presença não representa promessa de sono, humor ou resultado clínico.</p></article></div><p class="label-note">A composição completa ajuda a comparar opções; a adequação depende das necessidades individuais e da orientação profissional.</p></section>
       <section class="usage" id="uso" aria-labelledby="usage-title"><div class="usage-heading"><span class="tag">SIMPLES DE INCLUIR NA ROTINA</span><h2 id="usage-title">MODO DE USO</h2></div><div class="usage-items"><article class="usage-step"><span class="step-number">01</span><h3>Quantidade diária</h3><p>2 cápsulas ao dia*</p></article><article class="usage-step"><span class="step-number">02</span><h3>Quando tomar</h3><p>Preferencialmente pela manhã*</p></article><article class="usage-step"><span class="step-number">03</span><h3>Atenção à cafeína</h3><p>75 mg por porção. Considere outras fontes e sua sensibilidade.</p></article></div><p class="usage-note">*Orientação informada pela marca. Siga o rótulo atualizado e a orientação de um profissional de saúde.</p></section>
       <div class="audiences">
         <div class="section-title"><h2>UMA ROTINA INTENSA PEDE ESCOLHAS CONSCIENTES</h2><p>Trabalho, estudos ou atividades do dia a dia: conheça o produto antes de incluí-lo na sua rotina.</p></div>
@@ -76,44 +110,39 @@ import '../styles/global.css';
         </div>
       </div>
     </section>
-    <section id="ofertas" class="offers">
-      <div class="section-title"><h2>ESCOLHA SEU KIT</h2><p>1, 3 ou 6 potes. Compra direta na Braip.</p></div>
-      <div class="compact-kits">
-        <article class="compact-kit">
-          <img src="/images/kit-1.png" alt="Kit com 1 pote de Concentra C" loading="lazy" />
-          <div class="compact-kit-copy"><h3>1 pote</h3><span class="compact-portions">60 cápsulas · 30 porções</span><strong>R$ 147,00</strong><p>R$ 147,00 por pote</p><span class="compact-saving">Escolha para começar</span><a class="button" href="https://buy.braip.com/checkout/plajekdg/che6vvg1" data-event="checkout_click" data-kit="1" data-placement="kit">QUERO 1 POTE</a></div>
-        </article>
-        <article class="compact-kit compact-kit-featured">
-          <img src="/images/kit-3.png" alt="Kit com 3 potes de Concentra C" loading="lazy" />
-          <div class="compact-kit-copy"><h3>3 potes</h3><span class="compact-portions">180 cápsulas · 90 porções</span><strong>R$ 357,00</strong><p>R$ 119,00 por pote</p><span class="compact-saving">Economize R$ 84,00*</span><a class="button" href="https://buy.braip.com/checkout/pla0xor8/che6vvg1" data-event="checkout_click" data-kit="3" data-placement="kit">QUERO 3 POTES</a></div>
-        </article>
-        <article class="compact-kit">
-          <img src="/images/kit-6.png" alt="Kit com 6 potes de Concentra C" loading="lazy" />
-          <div class="compact-kit-copy"><h3>6 potes</h3><span class="compact-portions">360 cápsulas · 180 porções</span><strong>R$ 617,00</strong><p>R$ 102,83 por pote</p><span class="compact-saving">Economize R$ 265,00*</span><a class="button" href="https://buy.braip.com/checkout/play4k6o/che6vvg1" data-event="checkout_click" data-kit="6" data-placement="kit">QUERO 6 POTES</a></div>
-        </article>
-      </div>
-      <p class="offer-note">*Comparação com a mesma quantidade de potes avulsos a R$ 147,00. Valores antes do frete; confira descontos, pagamento e total na Braip.</p>
-    </section>
+    <section class="customer-ratings section-light" aria-labelledby="ratings-title"><div class="section-title"><h2 id="ratings-title">AVALIAÇÕES DO CONCENTRA C</h2><p>Resumo das 681 avaliações informadas pela marca.</p></div><div class="ratings-layout"><div class="rating-summary"><strong>{reviewAverage.toFixed(2).replace('.', ',')}<small>/ 5</small></strong><div class="rating-stars" role="img" aria-label={`Nota média ${reviewAverage.toFixed(2)} de 5`}><span aria-hidden="true">★★★★★</span><span class="rating-stars-fill" aria-hidden="true" style={`width:${reviewAverage / 5 * 100}%`}>★★★★★</span></div><p>{reviewTotal} avaliações</p></div><div class="rating-distribution">{ratingRows.map(row => <div class="rating-row"><span class="rating-row-label">{row.stars} <span class="rating-row-stars" aria-hidden="true">{'★'.repeat(row.stars)}{'☆'.repeat(5-row.stars)}</span><span class="sr-only">estrelas</span></span><progress max={reviewTotal} value={row.count} aria-label={`${row.stars} estrelas: ${row.count} avaliações`} /><strong>{row.count}</strong><small>{(row.count/reviewTotal*100).toFixed(1).replace('.', ',')}%</small></div>)}</div></div><p class="rating-source">Distribuição fornecida pela Casco Performance: 650 notas de 5 estrelas e 31 de 4 estrelas. Avaliações refletem experiências individuais e não garantem resultados.</p><a class="button rating-cta" href="#ofertas" data-event="offer_view_click" data-placement="ratings">ESCOLHER MEU KIT</a></section>
+<section id="ofertas" class="offers">
+  <div class="section-title"><h2>ESCOLHA SEU KIT</h2><p>Comece com 1 pote, escolha o kit mais pedido de 3 ou economize mais por pote com 6.</p></div>
+  <div class="compact-kits">
+    <article class="compact-kit">
+      <img src="/images/kit-1.png" alt="Kit com 1 pote de Concentra C" loading="lazy" />
+      <div class="compact-kit-copy"><h3>1 pote</h3><span class="compact-portions">60 cápsulas · 30 porções</span><strong>R$ 147,00</strong><p>R$ 147,00 por pote</p><small class="installments">Até 12x no cartão*</small><span class="compact-saving">Escolha para começar</span><a class="button" href="https://buy.braip.com/checkout/plajekdg/che6vvg1" data-event="checkout_click" data-kit="1" data-placement="kit">QUERO 1 POTE</a></div>
+    <div class="kit-bottom-badge"><span class="kit-bottom-placeholder" aria-hidden="true"></span></div></article>
+    <article class="compact-kit compact-kit-featured">
+      <img src="/images/kit-3.png" alt="Kit com 3 potes de Concentra C" loading="lazy" />
+      <div class="compact-kit-copy"><h3>3 potes</h3><span class="compact-portions">180 cápsulas · 90 porções</span><strong>R$ 357,00</strong><p>R$ 119,00 por pote</p><small class="installments">Até 12x no cartão*</small><span class="compact-saving">Economize R$ 84,00*</span><a class="button" href="https://buy.braip.com/checkout/pla0xor8/che6vvg1" data-event="checkout_click" data-kit="3" data-placement="kit">QUERO O MAIS ESCOLHIDO</a></div>
+    <div class="kit-bottom-badge"><span class="choice-badge">MAIS ESCOLHIDO</span></div></article>
+    <article class="compact-kit">
+      <img src="/images/kit-6.png" alt="Kit com 6 potes de Concentra C" loading="lazy" />
+      <div class="compact-kit-copy"><h3>6 potes</h3><span class="compact-portions">360 cápsulas · 180 porções</span><strong>R$ 617,00</strong><p>R$ 102,83 por pote · aprox.</p><small class="installments">Até 12x no cartão*</small><span class="compact-saving">Economize R$ 265,00*</span><a class="button" href="https://buy.braip.com/checkout/play4k6o/che6vvg1" data-event="checkout_click" data-kit="6" data-placement="kit">QUERO A MAIOR ECONOMIA</a></div>
+    <div class="kit-bottom-badge"><span class="choice-badge economical-badge">MAIS ECONÔMICO</span></div></article>
+  </div>
+  <p class="offer-note">*Parcelamento sujeito a juros e às condições do checkout. Comparação com a mesma quantidade de potes avulsos a R$ 147,00. Valores antes do frete; confira descontos, pagamento e total na Braip.</p>
+</section>
 
     <section class="money-guarantee" id="garantia" aria-labelledby="guarantee-title"><div class="guarantee-seal" aria-hidden="true">7<span>DIAS</span></div><div><p class="tag">SUA COMPRA COM MAIS TRANQUILIDADE</p><h2 id="guarantee-title">Garantia de devolução do dinheiro</h2><p>Você tem 7 dias após o recebimento para solicitar a devolução. Fale com nosso suporte para receber as instruções e conhecer o procedimento de reembolso.</p><a href="https://wa.me/5569992734388" target="_blank" rel="noopener noreferrer">Consultar condições de devolução</a></div></section><section id="duvidas" class="faq section-light">
       <div class="section-title"><h2>DÚVIDAS FREQUENTES</h2></div>
-      <div class="faq-list">
-        <details><summary>O que é o Concentra C?<span aria-hidden="true">⌄</span></summary><p>É um suplemento alimentar em cápsulas. Consulte a composição, o rótulo e suas advertências para avaliar se é adequado à sua rotina.</p></details>
-        <details><summary>Como devo usar o produto?<span aria-hidden="true">⌄</span></summary><p>O material da marca informa 2 cápsulas ao dia, preferencialmente pela manhã. Confira o rótulo atualizado e siga a orientação de um profissional de saúde.</p></details>
-        <details><summary>Quais são os ingredientes?<span aria-hidden="true">⌄</span></summary><p>A composição informada está apresentada nesta página por porção de 2 cápsulas. Solicite o rótulo atualizado para consultar também excipientes, alergênicos e advertências.</p></details>
-        <details><summary>O produto contém cafeína?<span aria-hidden="true">⌄</span></summary><p>Sim. A composição informada indica 75 mg por porção de 2 cápsulas. Considere outras fontes de cafeína e sua sensibilidade individual.</p></details>
-        <details><summary>Como funcionam a entrega e o pagamento?<span aria-hidden="true">⌄</span></summary><p>Escolha o kit de 1, 3 ou 6 potes e clique em comprar. Confira o frete, o total e as opções de pagamento na Braip antes de finalizar.</p></details>
-      </div><div class="final-purchase"><h3>Escolha seu kit e compre agora</h3><p>1, 3 ou 6 potes. Compare as opções e encontre a quantidade para sua rotina.</p><a class="button" href="#ofertas" data-event="offer_view_click" data-placement="faq">VER PREÇOS E ESCOLHER MEU KIT</a></div>
+      <div class="faq-list"><details open><summary>O que é o Concentra C?<span aria-hidden="true">⌄</span></summary><p>É um suplemento alimentar em cápsulas, com 10 ingredientes. Não é um medicamento e não substitui uma alimentação equilibrada.</p></details><details ><summary>Quem não deve usar?<span aria-hidden="true">⌄</span></summary><p>Este produto não deve ser consumido por gestantes, lactantes e crianças. Pessoas com enfermidades ou que usam medicamentos devem consultar seu médico. Verifique no rótulo alergênicos e outras restrições.</p></details><details ><summary>Qual a quantidade indicada?<span aria-hidden="true">⌄</span></summary><p>O material da marca informa 2 cápsulas ao dia, preferencialmente pela manhã. Não exceder a recomendação diária de consumo indicada na embalagem. A porção informada contém 75 mg de cafeína.</p></details><details ><summary>Posso tomar junto com café ou energéticos?<span aria-hidden="true">⌄</span></summary><p>Considere a cafeína total de café, energéticos, pré-treinos e outros suplementos. Não aumente a porção para compensar cansaço. Sua sensibilidade e outras condições de saúde devem ser avaliadas com um profissional.</p></details><details ><summary>Posso usar todos os dias? Por quanto tempo?<span aria-hidden="true">⌄</span></summary><p>A frequência deve seguir o rótulo e a orientação profissional. Cada pote tem 30 porções de 2 cápsulas; esse rendimento não é uma prescrição de duração nem uma promessa de resultados.</p></details><details ><summary>Uso medicamentos. Posso consumir?<span aria-hidden="true">⌄</span></summary><p>Consulte seu médico ou farmacêutico antes de combinar este suplemento com medicamentos ou outros suplementos. Informe a composição completa; não interrompa tratamentos prescritos.</p></details><details ><summary>Qual a diferença entre os kits?<span aria-hidden="true">⌄</span></summary><p>A fórmula é a mesma. Mudam a quantidade e o preço por pote: 1 pote com 30 porções, 3 potes com 90 porções e 6 potes com 180 porções. Confira o valor final no checkout.</p></details><details ><summary>Como funcionam frete e pagamento?<span aria-hidden="true">⌄</span></summary><p>O frete e o prazo são calculados no checkout conforme o endereço. Há PIX e cartão, com parcelamento em até 12x conforme as condições da Braip. Confira juros, parcelas e total antes de pagar.</p></details><details ><summary>Como solicitar a devolução?<span aria-hidden="true">⌄</span></summary><p>Você pode exercer o direito de arrependimento em até 7 dias após o recebimento. Entre em contato pelo e-mail ou WhatsApp do suporte, informando seu pedido. Consulte a política de trocas e devoluções para o procedimento.</p></details></div><div class="final-purchase"><h3>Escolha seu kit e compre agora</h3><p>1, 3 ou 6 potes. Compare as opções e encontre a quantidade para sua rotina.</p><a class="button" href="#ofertas" data-event="offer_view_click" data-placement="faq">VER PREÇOS E ESCOLHER MEU KIT</a></div>
       <a class="support-link" href="https://wa.me/5569992734388" target="_blank" rel="noopener noreferrer" data-event="support_contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#chat"></use></svg> Falar com o suporte</a>
     </section>
   </main>
-  <footer>
+  <section class="brand-assurances" aria-label="Confiança na compra"><a href="#ofertas"><span aria-hidden="true">✓</span><strong>Pagamento seguro</strong><small>Checkout Braip · PIX e cartão</small></a><a href="/trocas"><span aria-hidden="true">7</span><strong>7 dias para devolução</strong><small>Confira procedimento e condições</small></a><a href={company.whatsapp} target="_blank" rel="noopener noreferrer"><span aria-hidden="true">↗</span><strong>Atendimento via WhatsApp</strong><small>Tire dúvidas antes de comprar</small></a></section><footer>
     <div class="footer-main">
       <a class="brand" href="#" aria-label="Casco — início"><img src="/images/logo.png" alt="Casco" width="2080" height="1080" loading="lazy"></a>
       <nav aria-label="Navegação no rodapé"><a href="#formula">Fórmula</a><a href="#uso">Como usar</a><a href="#ofertas">Kits</a><a href="#duvidas">Dúvidas</a></nav>
       <a class="footer-chat" href="https://wa.me/5569992734388" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp da Casco"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#chat"></use></svg></a>
     </div>
-    <div class="footer-legal"><p>© 2026 Casco Performance · <a href="mailto:suporte@cascoperformance.com.br">suporte@cascoperformance.com.br</a></p><p>Suplemento alimentar. Este produto não é um medicamento. Consulte o rótulo e suas advertências.</p></div>
+    <nav class="policy-links" aria-label="Políticas"><a href="/privacidade">Privacidade</a><a href="/termos">Termos de uso</a><a href="/trocas">Trocas e devoluções</a><button type="button" data-cookie-settings>Preferências de cookies</button></nav><div class="company-details"><p><strong>{company.legalName || '[Preencher razão social]'}</strong></p><p>CNPJ: {company.cnpj || '[Preencher CNPJ]'} · Endereço: {company.address || '[Preencher endereço completo]'}</p></div><aside class="consumption-warning" aria-label="Advertências de consumo"><h3>Antes de consumir</h3><p><strong>Este produto não é um medicamento.</strong> <strong>Não exceder a recomendação diária de consumo indicada na embalagem.</strong> <strong>Mantenha fora do alcance de crianças.</strong></p><p><strong>Este produto não deve ser consumido por gestantes, lactantes e crianças.</strong></p><p>Contém 75 mg de cafeína por porção de 2 cápsulas, conforme composição informada. Considere café, energéticos e outras fontes de cafeína. Pessoas com enfermidades ou que usam medicamentos devem consultar seu médico antes do consumo. Confira todas as advertências e alergênicos no rótulo atualizado.</p></aside><div class="footer-legal"><p>© 2026 Casco Performance · <a href="mailto:suporte@cascoperformance.com.br">suporte@cascoperformance.com.br</a></p><p>Suplemento alimentar. Este produto não é um medicamento. Consulte o rótulo e suas advertências.</p></div>
   </footer>
 </div>
 <a class="mobile-purchase" href="#ofertas" data-event="offer_view_click" data-placement="mobile"><span><strong>Concentra C</strong><small>Escolha 1, 3 ou 6 potes</small></span><b>ESCOLHER KIT</b></a>
@@ -132,5 +161,6 @@ import '../styles/global.css';
     window.dispatchEvent(new CustomEvent('casco:analytics', { detail: { event: a.dataset.event, kit: a.dataset.kit || null, placement: a.dataset.placement || null } }));
   }));
 </script>
+<Tracking />
 </body>
 </html>
