@@ -1,0 +1,7 @@
+---
+interface Props { small?: boolean; count?: number; }
+const { small = false, count = 1 } = Astro.props;
+---
+<div class:list={['product-visual', { small }]}>
+ {Array.from({length: count}, (_, i) => <img src="/images/produto.png" width="480" height="640" loading={small ? 'lazy' : 'eager'} fetchpriority={small ? 'auto' : 'high'} alt={i === 0 ? 'Frasco de Concentra C da Casco Performance, 60 cápsulas' : ''} style={`--i:${i};--count:${count}`} />)}
+</div>

@@ -1,0 +1,4 @@
+Substitua src/pages/index.astro e src/styles/global.css no projeto Astro existente. Copie public/images. Execute npm run dev ou npm run build.
+Kits: somente 1, 3 e 6 potes. Header e CTAs gerais direcionam às ofertas.
+Preços riscados comparam o kit à mesma quantidade de potes avulsos a R$147; não representam histórico de preço. Não foi usado R$199 sem confirmação.
+Garantia de 7 dias recuperada do material anterior; conferir procedimento comercial com o suporte antes da publicação.
